@@ -3,7 +3,12 @@ package cn.csg;
 /**
  * Created by DoutzenShum on 2017/8/4.
  */
+import java.io.UnsupportedEncodingException;
+import java.util.List;
 
+import net.sf.ezmorph.bean.MorphDynaBean;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 import org.apache.http.*;
 import org.apache.http.client.config.CookieSpecs;
 import org.apache.http.client.config.RequestConfig;
@@ -48,20 +53,23 @@ public class Ggget {
             //打印登录是否成功信息
             String jsonString =  printResponse(httpResponse);
 
-
-
-
-
+            //From JsonTest
+            JSONArray jsonArray = JSONArray.fromObject("["+jsonString+"]");
+            JSONObject jsonObject = jsonArray.getJSONObject(0);
+            JSONObject token = (JSONObject) jsonObject.get("token");
+            String realToken = token.get("access_token").toString();
+//            System.out.println(token.get("access_token"));
+            System.out.println(realToken);
 
 
             //构造一个get请求，用来测试登录cookie是否拿到
             HttpGet g = new HttpGet("https://antfact.com/eageye/v4/document/swift?eventId=e6d35e90-618b-4ab4-953c-85a7722679c0&pageSize=10&optionParams=%7B%22isRelative%22:false%7D&from=monitorColumn_ordinary");
 
-            g.setHeader("authorization", "oauth2 3mimkBaDo53qadr17nsPrPeD");
+            g.setHeader("authorization", "oauth2 "+realToken);
 
             CloseableHttpResponse r = httpClient.execute(g);
             String content = EntityUtils.toString(r.getEntity());
-//            System.out.println(content);
+            System.out.println(content);
             r.close();
         } catch (IOException e) {
             e.printStackTrace();
